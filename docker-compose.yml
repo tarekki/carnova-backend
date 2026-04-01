@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16
+    container_name: carnova_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: carnova_db
+      POSTGRES_USER: carnova_user
+      POSTGRES_PASSWORD: carnova_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: .
+    container_name: carnova_backend
+    restart: unless-stopped
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
