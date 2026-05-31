@@ -1,17 +1,31 @@
 """
 Standard API response envelope.
 
-All API responses follow the same shape:
+Every response follows the same shape (camelCase via DRF camel-case renderer):
 
 Success:
-    {"result": "success", "data": <dict | list | None>, "message": str}
+    {
+        "result":    "success",
+        "data":      <dict | list | None>,
+        "message":   "<human-readable>",
+        "requestId": "<uuid>"          # injected when a RequestId is in scope
+    }
 
 Error:
-    {"result": "error",   "data": {"errors": <dict | None>}, "message": str}
+    {
+        "result":    "error",
+        "code":      "<MACHINE_CODE>",  # see common.error_codes
+        "data":      {"errors": <{field: [msgs]} | None>},
+        "message":   "<human-readable>",
+        "requestId": "<uuid>"
+    }
 
-Use `success_response` / `error_response` from views, and let the custom
-exception handler (common.exceptions.custom_exception_handler) wrap errors
-raised by DRF/Django automatically.
+Use `success_response` / `error_response` from views; the custom exception
+handler (common.exceptions.custom_exception_handler) wraps errors raised by
+DRF/Django automatically and adds the `code` field.
+
+Frontends should branch on `code` (machine-readable, stable) — never on
+`message` (human-readable, may be localized later).
 """
 from __future__ import annotations
 

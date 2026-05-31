@@ -29,7 +29,8 @@ class MaintenanceReminder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ("due_date",)
+        # Tiebreaker on id keeps reminder lists deterministic for the same date.
+        ordering = ("due_date", "id")
 
     def __str__(self):
         return f"{self.car} — {self.title} ({self.due_date})"

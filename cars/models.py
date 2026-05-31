@@ -28,7 +28,8 @@ class Car(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["-created_at"]
+        # Tiebreaker on -id keeps results deterministic for paginated lists.
+        ordering = ["-created_at", "-id"]
 
     def __str__(self):
         return f"{self.brand.name} {self.model} ({self.plate_number})"
